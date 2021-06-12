@@ -1,6 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const weightedSearchAlgorithm = require("../pathfindingAlgorithms/weightedSearchAlgorithm");
-const unweightedSearchAlgorithm = require("../pathfindingAlgorithms/unweightedSearchAlgorithm");
 
 function launchAnimations(board, success, type, object, algorithm, heuristic) {
   let nodes = object ? board.objectNodesToAnimate.slice(0) : board.nodesToAnimate.slice(0);
@@ -321,14 +320,10 @@ const launchAnimations = require("./animations/launchAnimations");
 const launchInstantAnimations = require("./animations/launchInstantAnimations");
 const mazeGenerationAnimations = require("./animations/mazeGenerationAnimations");
 const weightedSearchAlgorithm = require("./pathfindingAlgorithms/weightedSearchAlgorithm");
-const unweightedSearchAlgorithm = require("./pathfindingAlgorithms/unweightedSearchAlgorithm");
 const recursiveDivisionMaze = require("./mazeAlgorithms/recursiveDivisionMaze");
 const otherMaze = require("./mazeAlgorithms/otherMaze");
 const otherOtherMaze = require("./mazeAlgorithms/otherOtherMaze");
-const astar = require("./pathfindingAlgorithms/astar");
 const stairDemonstration = require("./mazeAlgorithms/stairDemonstration");
-const weightsDemonstration = require("./mazeAlgorithms/weightsDemonstration");
-const simpleDemonstration = require("./mazeAlgorithms/simpleDemonstration");
 const bidirectional = require("./pathfindingAlgorithms/bidirectional");
 const getDistance = require("./getDistance");
 
@@ -352,7 +347,7 @@ function Board(height, width) {
   this.previouslySwitchedNodeWeight = 0;
   this.keyDown = false;
   this.algoDone = false;
-  this.currentAlgorithm = null;
+  this.currentAlgorithm = "dijkstra";
   this.currentHeuristic = null;
   this.numberOfObjects = 0;
   this.isObject = false;
@@ -764,8 +759,7 @@ Board.prototype.clearPath = function(clickedButton) {
     } else {
       this.clearPath("clickedButton");
       this.toggleButtons();
-      let weightedAlgorithms = ["dijkstra", "CLA", "greedy"];
-      let unweightedAlgorithms = ["dfs", "bfs"];
+      let weightedAlgorithms = "dijkstra";
       let success;
       if (this.currentAlgorithm === "bidirectional") {
         if (!this.numberOfObjects) {
@@ -877,8 +871,7 @@ Board.prototype.clearNodeStatuses = function() {
 };
 
 Board.prototype.instantAlgorithm = function() {
-  let weightedAlgorithms = ["dijkstra", "CLA", "greedy"];
-  let unweightedAlgorithms = ["dfs", "bfs"];
+  let weightedAlgorithms = "dijkstra";
   let success;
   if (this.currentAlgorithm === "bidirectional") {
     if (!this.numberOfObjects) {
@@ -1072,8 +1065,7 @@ Board.prototype.toggleButtons = function() {
       } else {
         this.clearPath("clickedButton");
         this.toggleButtons();
-        let weightedAlgorithms = ["dijkstra", "CLA", "CLA", "greedy"];
-        let unweightedAlgorithms = ["dfs", "bfs"];
+        let weightedAlgorithms = "dijkstra";
         let success;
         if (this.currentAlgorithm === "bidirectional") {
           if (!this.numberOfObjects) {
@@ -1119,21 +1111,6 @@ Board.prototype.toggleButtons = function() {
       }
     }
 
-    document.getElementById("adjustFast").onclick = () => {
-      this.speed = "fast";
-      document.getElementById("adjustSpeed").innerHTML = 'Speed: Fast<span class="caret"></span>';
-    }
-
-    document.getElementById("adjustAverage").onclick = () => {
-      this.speed = "average";
-      document.getElementById("adjustSpeed").innerHTML = 'Speed: Average<span class="caret"></span>';
-    }
-
-    document.getElementById("adjustSlow").onclick = () => {
-      this.speed = "slow";
-      document.getElementById("adjustSpeed").innerHTML = 'Speed: Slow<span class="caret"></span>';
-    }
-
     document.getElementById("startStairDemonstration").onclick = () => {
       this.clearWalls();
       this.clearPath("clickedButton");
@@ -1157,53 +1134,6 @@ Board.prototype.toggleButtons = function() {
         this.isObject = false;
       }
       this.clearPath("clickedButton");
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonDijkstra").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize Dijkstra\'s!</button>'
-      this.currentAlgorithm = "dijkstra";
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonAStar").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize Swarm!</button>'
-      this.currentAlgorithm = "CLA";
-      this.currentHeuristic = "manhattanDistance"
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonAStar2").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize A*!</button>'
-      this.currentAlgorithm = "astar";
-      this.currentHeuristic = "poweredManhattanDistance"
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonAStar3").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize Convergent Swarm!</button>'
-      this.currentAlgorithm = "CLA";
-      this.currentHeuristic = "extraPoweredManhattanDistance"
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonGreedy").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize Greedy!</button>'
-      this.currentAlgorithm = "greedy";
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonBFS").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize BFS!</button>'
-      this.currentAlgorithm = "bfs";
-      this.clearWeights();
-      this.changeStartNodeImages();
-    }
-
-    document.getElementById("startButtonDFS").onclick = () => {
-      document.getElementById("startButtonStart").innerHTML = '<button id="actualStartButton" class="btn btn-default navbar-btn" type="button">Visualize DFS!</button>'
-      this.currentAlgorithm = "dfs";
-      this.clearWeights();
       this.changeStartNodeImages();
     }
 
@@ -1350,15 +1280,7 @@ Board.prototype.toggleButtons = function() {
     document.getElementById("startButtonCreateMazeFour").className = "navbar-inverse navbar-nav";
     document.getElementById("startButtonCreateMazeWeights").className = "navbar-inverse navbar-nav";
     document.getElementById("startStairDemonstration").className = "navbar-inverse navbar-nav";
-    document.getElementById("startButtonDFS").className = "navbar-inverse navbar-nav";
-    document.getElementById("startButtonBFS").className = "navbar-inverse navbar-nav";
     document.getElementById("startButtonDijkstra").className = "navbar-inverse navbar-nav";
-    document.getElementById("startButtonAStar").className = "navbar-inverse navbar-nav";
-    document.getElementById("startButtonAStar2").className = "navbar-inverse navbar-nav";
-    document.getElementById("startButtonAStar3").className = "navbar-inverse navbar-nav";
-    document.getElementById("adjustFast").className = "navbar-inverse navbar-nav";
-    document.getElementById("adjustAverage").className = "navbar-inverse navbar-nav";
-    document.getElementById("adjustSlow").className = "navbar-inverse navbar-nav";
     document.getElementById("startButtonBidirectional").className = "navbar-inverse navbar-nav";
     document.getElementById("startButtonGreedy").className = "navbar-inverse navbar-nav";
     document.getElementById("actualStartButton").style.backgroundColor = "";
@@ -1384,13 +1306,7 @@ Board.prototype.toggleButtons = function() {
     document.getElementById("startButtonClearWalls").onclick = null;
     document.getElementById("startButtonClearBoard").onclick = null;
     document.getElementById("startButtonStart").onclick = null;
-    document.getElementById("adjustFast").onclick = null;
-    document.getElementById("adjustAverage").onclick = null;
-    document.getElementById("adjustSlow").onclick = null;
 
-    document.getElementById("adjustFast").className = "navbar-inverse navbar-nav disabledA";
-    document.getElementById("adjustAverage").className = "navbar-inverse navbar-nav disabledA";
-    document.getElementById("adjustSlow").className = "navbar-inverse navbar-nav disabledA";
     document.getElementById("startButtonClearPath").className = "navbar-inverse navbar-nav disabledA";
     document.getElementById("startButtonClearWalls").className = "navbar-inverse navbar-nav disabledA";
     document.getElementById("startButtonClearBoard").className = "navbar-inverse navbar-nav disabledA";
