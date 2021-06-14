@@ -34,7 +34,7 @@ function Board(height, width) {
   this.previouslySwitchedNodeWeight = 0;
   this.keyDown = false;
   this.algoDone = false;
-  this.currentAlgorithm = dijkstra;
+  this.currentAlgorithm = "dijkstra";
   this.currentHeuristic = null;
   this.numberOfObjects = 0;
   this.isObject = false;
